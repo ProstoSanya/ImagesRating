@@ -229,43 +229,33 @@ const handlers = {
 					const filter = {'_id': ObjectID(authorId), 'images.filename': filename}
 					const findRes = await users.findOne(filter)
 					if(findRes){
-						const arrayFilters = [{'img.filename': filename}]
-						for(let i=0, img;i<findRes.images.length;i++){
-							img = findRes.images[i]
-							if(img.filename == filename){ // нашли нужный файл
-								//let likeExists = false
-								/*for(let i=0;i<likesCount;i++){ // ищем лайк
-									if(img.likes[i] == req.session.userid){
-										likeExists = true
-										break
-									}
-								}*/
-                //const likeExists = img.likes.includes(userId)
-                const likesCount = img.likes.length
-                const likeExists = img.likes.find((id) => id == userId)
-								let responseObj = {}
-								if(!likeExists){ // лайка нет - нужно добавить
-									const update = {$push: {'images.$[img].likes': userId}}
-									const updateRes = await users.updateOne(filter, update, {arrayFilters})
-									if(updateRes){
-										responseObj = {"status": "added", "likesCount": likesCount + 1}
-									}
-									else{
-										responseObj = {"status": "error", "message": "Возникла ошибка при попытке добавить запись в БД."}
-									}
+            const img = findRes.images.find((i) => i.filename == filename)
+            if(img){ // нашли нужный файл
+              const likesCount = img.likes.length
+              const likeExists = img.likes.find((id) => id == userId)
+    					const arrayFilters = [{'img.filename': filename}]
+							let responseObj = {}
+							if(!likeExists){ // лайка нет - нужно добавить
+								const update = {$push: {'images.$[img].likes': userId}}
+								const updateRes = await users.updateOne(filter, update, {arrayFilters})
+								if(updateRes){
+									responseObj = {"status": "added", "likesCount": likesCount + 1}
 								}
-								else{ // лайк уже поставлен - нужно убрать
-									const update = {$pull: {'images.$[img].likes': userId}}
-									const updateRes = await users.updateOne(filter, update, {arrayFilters})
-									if(updateRes){
-										responseObj = {"status": "removed", "likesCount": likesCount - 1}
-									}
-									else{
-										responseObj = {"status": "error", "message": "Возникла ошибка при попытке изменить запись в БД."}
-									}
+								else{
+									responseObj = {"status": "error", "message": "Возникла ошибка при попытке добавить запись в БД."}
 								}
-								return res.json(responseObj)
 							}
+							else{ // лайк уже поставлен - нужно убрать
+								const update = {$pull: {'images.$[img].likes': userId}}
+								const updateRes = await users.updateOne(filter, update, {arrayFilters})
+								if(updateRes){
+									responseObj = {"status": "removed", "likesCount": likesCount - 1}
+								}
+								else{
+									responseObj = {"status": "error", "message": "Возникла ошибка при попытке изменить запись в БД."}
+								}
+							}
+							return res.json(responseObj)
 						}
 					}
 				}
