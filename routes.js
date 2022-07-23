@@ -1,9 +1,12 @@
 const validations = require('./validations')
 const upload = require('./middlewares/upload')
 const auth = require('./middlewares/auth')
-const handlers = require('./middlewares/handlers')
+//const handlers = require('./middlewares/handlers')
+const handlersMiddleware = require('./middlewares/handlers')
 
 module.exports = (app, users) => {
+	const handlers = handlersMiddleware(users)
+
 	app.get('/', handlers.homepage)
 
 	app.get('/registration', auth.alreadyLoggedIn, handlers.registration)

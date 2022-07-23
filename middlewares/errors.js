@@ -5,7 +5,7 @@ module.exports = {
 		next(err)
 	},
 
-  sendErrorPage: (err, req, res, next) => {
+  sendErrorPage: (err, req, res) => {
 		if(!err.status){
 			err.status = 500
 		}

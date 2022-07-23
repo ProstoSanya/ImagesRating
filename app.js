@@ -29,14 +29,19 @@ let dbClient
 
 client.connect((err, database) => {
 	if(err){
-		return console.log(err)
+		return console.log('err =', err)
 	}
 	dbClient = database
 
 	app.use(setRenderPage)
 
   const users = database.db('db').collection('users')
-	routes(app, users)
+	app.use((req, res, next) => {
+		res.users = users
+		next()
+	})
+
+	routes(app, users) /*, users*/
 
 	app.use(setError404)
 	app.use(sendErrorPage)
