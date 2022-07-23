@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<%- include('head.ejs') %>
+</head>
+<body>
+	<div id="top">
+		<%- include('parts/menu.ejs') %>
+		<%- include('parts/loginBlock.ejs') %>
+	</div>
+	<div>
+		<br>
+		<div class="selectContainer">
+			Сортировать&nbsp;<select id="sortBy">
+				<option value="latest" <% if(sortBy != 'popular'){ %><%= ' selected' %><% } %> >По дате загрузки</option>
+				<option value="popular" <% if(sortBy == 'popular'){ %><%= ' selected' %><% } %> >По рейтингу</option>
+			</select>
+		</div>
+		<br>
+
+		<%- include('parts/imagesList.ejs', {images, tagId: 'images'}) %>
+		<br>
+		
+	</div>
+</body>
+</html>

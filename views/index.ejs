@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<%- include('parts/head.ejs') %>
+</head>
+<body>
+	<div id="top">
+		<%- include('parts/menu.ejs') %>
+		<%- include('parts/loginBlock.ejs') %>
+	</div>
+	<div>
+		<br>
+		
+		<h2>Последние изображения:</h2>
+		<%- include('parts/imagesList.ejs', {images: latestImages, tagId: 'latestImages'}) %>
+		<div class="see_all"><a href="/gallery">Смотреть все</a></div>
+		
+		<br><br>
+		
+		<h2>Популярные изображения:</h2>
+		<%- include('parts/imagesList.ejs', {images: popularImages, tagId: 'popularImages'}) %>
+		<div class="see_all"><a href="/gallery?sortBy=popular">Смотреть все</a></div>
+		
+		<br>
+	</div>
+</body>
+</html>

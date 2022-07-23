@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<%- include('parts/head.ejs') %>
+</head>
+<body>
+	<div id="top">
+		<%- include('parts/menu.ejs') %>
+		<%- include('parts/loginBlock.ejs') %>
+	</div>
+	<div>
+		<ul>
+		<% for(let i=0;i<list.length;i++){ %>
+			<li>
+				<a href="/users/<%= list[i].name %>"><%= list[i].name %></a><% if(list[i].imagesCount){ %> - <%= list[i].imagesCount %><% } %>
+			</li>
+		<% } %>
+		</ul>
+	</div>
+</body>
+</html>

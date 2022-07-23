@@ -1,0 +1,74 @@
+.cursor_pointer{
+	cursor: pointer;
+}
+
+h2{
+	display:inline-block;
+	width: 100%;
+	margin-bottom: 0;
+	text-align: center;
+}
+
+#imagesList li{
+	display: inline-block;
+}
+
+#profile_info li span{
+	display: inline-block;
+}
+#profile_info li span:first-child{
+	min-width: 180px;
+}
+.imagesList li{
+	display: inline-block;
+	padding: 10px;
+	margin: 10px;
+	border: 1px solid black;
+	border-radius: 5px;
+}
+.imagesList li img{
+	max-width: 320px;
+	max-height: 320px;
+}
+
+.imageInfo{
+	font-size: 20px;
+}
+.likeIcon{
+	font-size: 25px;
+}
+.likeIcon:after{
+	content: "\2606";
+}
+.likeIcon.added:after{
+	content: "\2605";
+}
+
+.see_all{
+	width: 100%;
+	text-align: center;
+	font-size: 20px;
+}
+
+.selectContainer{
+	font-size: 18px;
+}
+
+#top{
+	width: 100%;
+	float:left;
+	margin: 5px;
+	font-size: 18px;
+}
+
+#top > div{
+	display: inline-block;
+}
+
+#menu{
+	float:left;
+}
+
+#loginBlock{
+	float:right;
+}

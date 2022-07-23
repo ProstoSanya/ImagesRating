@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<%- include('parts/head.ejs') %>
+</head>
+<body>
+	<div id="top">
+		<%- include('parts/menu.ejs') %>
+		<%- include('parts/loginBlock.ejs') %>
+	</div>
+	<div>
+		<div class="error_text"><%= error %></div><br>
+		<form method="POST">
+			Логин: <input name="username" type="text" value="<% if(typeof(username) != 'undefined'){ %><%= username %><% } %>"/><br>
+			E-mail: <input name="email" type="text" value="<% if(typeof(email) != 'undefined'){ %><%= email %><% } %>"/><br>
+			Пароль: <input name="password" type="text" value="<% if(typeof(password) != 'undefined'){ %><%= password %><% } %>"/><br>
+			Повторите пароль: <input name="password2" type="text" value="<% if(typeof(password2) != 'undefined'){ %><%= password2 %><% } %>"/><br>
+			<input name="submit_btn" type="submit" value="Зарегистрироваться" />
+		</form>
+	</div>
+</body>
+</html>

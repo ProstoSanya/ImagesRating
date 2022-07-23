@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<%- include('parts/head.ejs') %>
+</head>
+<body>
+	<div>
+		<div id="top">
+			<%- include('parts/menu.ejs') %>
+			<div id="loginBlock">Вы вошли как <b><%= username %></b> | <a href="logout">Выйти</a></div>
+		</div>
+		<br><br>
+		<div id="profile_info">
+			<ul>
+				<li><span>Логин:</span><span><%= username %></span></li>
+				<li><span>E-mail:</span><span><%= email %></span></li>
+				<li><span>Дата регистрации:</span><span><%= reg_date %></span></li>
+				<li><span>Загружено изображений:</span><span><%= totalImagesCount %></span></li>
+				<li><span>Рейтинг (кол-во лайков):</span><span><%= totalLikesCount %></span></li>
+			</ul>
+		</div>
+		<br>
+		<div class="message_text"><%= message %></div><br>
+		<div class="error_text"><%= error %></div><br>
+		<form method="POST" enctype="multipart/form-data">
+			Название: <input name="title" type="text" required /><br>
+			Изображение: <input name="filedata" type="file" required /><br>
+			<input value="Загрузить" type="submit" />
+		</form>
+		<br>
+		<br>
+		Последние добавленные изображения:
+		<br>
+		<ul id="imagesList_profile" class="imagesList" data-authorid="<%= userid %>">
+		<% for(let i=images.length - 1;i>=0;i--){ %>
+			<li>
+					<div class="imageInfo">
+					<b><%= images[i].title %></b> - <span class="likeInfo" onselectstart="return false">
+						<span class="likeIcon"></span>
+						<span class="likesCount"><%= images[i].likes.length %></span>
+					</span>
+				</div>
+				<br>
+				<div><img title="<%= images[i].title %>" src="/uploads/<%= username %>/<%= images[i].filename %>" /></div>
+			</li>
+		<% } %>
+		</ul>
+		<div class="see_all"><a href="/users/<%= username %>/">Смотреть все</a></div>
+	</div>
+</body>
+</html>

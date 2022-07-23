@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<%- include('parts/head.ejs') %>
+</head>
+<body>
+	<div id="top">
+		<%- include('parts/menu.ejs') %>
+		<%- include('parts/loginBlock.ejs') %>
+	</div>
+	<div>
+		<div class="error_text"><%= error %></div><br>
+		<form method="POST" action="login">
+			Логин: <input name="username" type="text" /><br>
+			Пароль: <input name="password" type="text" /><br>
+			<input value="Вход" type="submit" />
+		</form>
+	</div>
+</body>
+</html>

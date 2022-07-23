@@ -1,0 +1,9 @@
+<div id="loginBlock">
+<% if(loggedin){ %>
+	Вы вошли как <b><%= username %></b> | <a href="/profile">Личный кабинет</a> | <a href="/logout">Выйти</a><br><br>
+	<input type="hidden" id="userid" value="<%= userid %>">
+<% } else { %> 
+	<a href="/login">Авторизация</a> | <a href="/registration">Регистрация</a><br><br>
+	<input type="hidden" id="userid" value="">
+<% } %>
+</div>
