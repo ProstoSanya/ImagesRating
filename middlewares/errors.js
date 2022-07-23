@@ -1,4 +1,4 @@
-modele.exports = {
+module.exports = {
   setError404: (req, res, next) => {
 		const err = new Error('Not found')
 		err.status = 404
