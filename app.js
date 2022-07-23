@@ -36,12 +36,7 @@ client.connect((err, database) => {
 	app.use(setRenderPage)
 
   const users = database.db('db').collection('users')
-	app.use((req, res, next) => {
-		res.users = users
-		next()
-	})
-
-	routes(app, users) /*, users*/
+	routes(app, users)
 
 	app.use(setError404)
 	app.use(sendErrorPage)
