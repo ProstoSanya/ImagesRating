@@ -86,7 +86,7 @@ const handlers = (users) => {
   			})
 
   			//create dir for images
-  			const dir = path.join(__dirname, '/public/uploads/' + username + '/')
+  			const dir = path.join(__dirname, process.env.USERS_UPLOAD_DIR + username + '/')
   			if(!fs.existsSync(dir)){
   				fs.mkdirSync(dir)
   			}
@@ -168,7 +168,7 @@ const handlers = (users) => {
   			}
 
   			const filename = Date.now() + path.extname(req.file.originalname)
-  			const userdir = path.join(__dirname, '/public/uploads/' + req.session.username + '/')
+  			const userdir = path.join(__dirname, process.env.USERS_UPLOAD_DIR + req.session.username + '/')
   			filepath = userdir + filename
 
   			const readStream = fs.createReadStream(uploadedFilepath)
