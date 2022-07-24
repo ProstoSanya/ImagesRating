@@ -6,13 +6,13 @@ const stream = require('stream/promises')
 const bcrypt = require('bcryptjs')
 const { ObjectID } = require('mongodb')
 
-const handlers = (users) => {
+const removeFile = (filepath) => {
+  fs.unlink(filepath, (err) => {
+  	console.error(err)
+  })
+}
 
-  const removeFile = (filepath) => {
-    fs.unlink(filepath, (err) => {
-    	console.error(err)
-    })
-  }
+const handlers = (users) => {
 
   const getImages = async (sortBy, limit = 0) => {
   	let settings = [
@@ -56,7 +56,6 @@ const handlers = (users) => {
   return {
     homepage: async (req, res, next) => {
       try{
-        //console.log('req.users', res.users)
     		const latestImages = await getImages('latest', 6)
     		const popularImages = await getImages('popular', 6)
     		res.renderPage('index', {latestImages, popularImages})
@@ -150,7 +149,6 @@ const handlers = (users) => {
   		let filepath = ''
   		try{
   			if(!req.file){
-  				//return res.renderPage('profile', {error: 'Укажите файл!'})
   				throw new Error('Укажите файл!')
   			}
   			uploadedFilepath = path.join(__dirname, req.file.path)
