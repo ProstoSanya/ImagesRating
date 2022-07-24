@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express')
 const session = require('express-session')
 const bodyParser = require('body-parser')
@@ -8,10 +10,12 @@ const routes = require('./routes')
 const setRenderPage = require('./middlewares/setRenderPage')
 const { setError404, sendErrorPage } = require('./middlewares/errors')
 
-const PORT = 8080
-const HOST = '127.0.0.1'
+const PORT = process.env.PORT
+const HOST = process.env.HOST
+const DB_PORT = process.env.DB_PORT
+const DB_HOST = process.env.DB_HOST
+
 const app = express()
-const client = new MongoClient('mongodb://localhost:27017')
 
 app.use(express.static(`${__dirname}/public`))
 app.use(session({
@@ -26,7 +30,7 @@ app.set('views', './views')
 app.set('view engine', 'ejs')
 
 let dbClient
-
+const client = new MongoClient(`mongodb://${DB_HOST}:${DB_PORT}`)
 client.connect((err, database) => {
 	if(err){
 		return console.log(err)
