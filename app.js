@@ -29,7 +29,7 @@ let dbClient
 
 client.connect((err, database) => {
 	if(err){
-		return console.log('err =', err)
+		return console.log(err)
 	}
 	dbClient = database
 
