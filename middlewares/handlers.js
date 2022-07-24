@@ -58,6 +58,10 @@ const handlers = (users) => {
   		const latestImages = await getImages('latest', 6)
   		const popularImages = await getImages('popular', 6)
   		res.renderPage('index', {latestImages, popularImages})
+<<<<<<< HEAD
+=======
+      /*res.renderPage('index', {latestImages: [], popularImages: []})*/
+>>>>>>> be2c3ccf1c8ecbcb090b352590beb4bd01ca0c45
   	},
 
     registration: (req, res, next) => {
