@@ -55,18 +55,13 @@ const handlers = (users) => {
 
   return {
     homepage: async (req, res, next) => {
-      try{
-    		const latestImages = await getImages('latest', 6)
-    		const popularImages = await getImages('popular', 6)
-    		res.renderPage('index', {latestImages, popularImages})
-      }
-      catch(err){
-        next(err)
-      }
+  		const latestImages = await getImages('latest', 6)
+  		const popularImages = await getImages('popular', 6)
+  		res.renderPage('index', {latestImages, popularImages})
   	},
 
     registration: (req, res, next) => {
-  		res.renderPage('registration')
+      res.renderPage('registration')
   	},
 
     registrationPost: async (req, res, next) => {
