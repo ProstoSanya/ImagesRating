@@ -72,6 +72,16 @@ const handlers = (users) => {
   			}
 
   			const { username, password, email } = req.body
+  			const findRes = await users.findOne({$or:[{'email': {$regex: email, $options: '-i'}}, {'username': {$regex: username, $options: '-i'}}]})
+  			if(findRes){
+  				if(findRes.email.toLowerCase() == email.toLowerCase()){
+  					throw new Error('Такая почта уже занята!')
+  				}
+  				else{
+  					throw new Error('Такой логин уже занят!')
+  				}
+  			}
+
   			const insertRes = await users.insertOne({
   				'username': username,
   				'email': email,
@@ -81,7 +91,7 @@ const handlers = (users) => {
   			})
 
   			//create dir for images
-  			const dir = path.join(__dirname, process.env.USERS_UPLOAD_DIR + username + '/')
+  			const dir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + username + '/')
   			if(!fs.existsSync(dir)){
   				fs.mkdirSync(dir)
   			}
@@ -108,7 +118,7 @@ const handlers = (users) => {
   			if(findRes){
   				if(bcrypt.compareSync(password, findRes.password)){
   					req.session.loggedin = true
-  					req.session.username = username
+  					req.session.username = findRes.username
   					req.session.userid = findRes._id.toString()
   					res.redirect('/profile')
   				}
@@ -132,10 +142,11 @@ const handlers = (users) => {
   		res.redirect('/')
   	},
 
-    profile: (req, res, next) => {
+    profile: async (req, res, next) => {
   		const message = req.session.message || ''
   		delete req.session.message
-  		res.renderPage('profile', {message})
+      const userData = await getUserData(req.session.userid)
+  		res.renderPage('profile', {...userData, message})
   	},
 
     profilePost: async (req, res, next) => {
@@ -191,9 +202,18 @@ const handlers = (users) => {
 
     users: async (req, res, next) => {
   		let usersList = await users.aggregate([
-  			{$project: {'name': '$username', 'imagesCount': {$size: '$images'}}},
+  			{$project: {'name': '$username', 'reg_date': '$reg_date', 'imagesCount': {$size: '$images'}}},
   			{$sort: {'imagesCount': -1}}
   		]).toArray()
+      usersList = usersList.map((u) => {
+          //let d = new Date(u.reg_date)
+          const date_str = ((new Date(u.reg_date)).toLocaleDateString('ru-RU', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }))
+          return {...u, reg_date: date_str}
+        })
   		res.renderPage('users', {list: usersList})
   	},
 

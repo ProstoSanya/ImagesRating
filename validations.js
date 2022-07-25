@@ -7,20 +7,7 @@ module.exports = {
 
 	email: check('email').trim().escape()
 		.isLength({ min: 6, max: 20 }).withMessage('Длина почты должна составлять от 6 до 20 символов!')
-		.normalizeEmail().isEmail().withMessage('Невалидная почта!')
-		.custom(async (email, { req }) => {
-			const username = req.body.username
-			const findRes = await users.findOne({$or:[{'email': {$regex: email, $options: '-i'}}, {'username': {$regex: username, $options: '-i'}}]})
-			if(findRes){
-				if(findRes.email.toLowerCase() == email.toLowerCase()){
-					throw new Error('Такая почта уже занята!')
-				}
-				else{
-					throw new Error('Такой логин уже занят!')
-				}
-			}
-		}
-	),
+		.normalizeEmail().isEmail().withMessage('Невалидная почта!'),
 	password: check('password').trim().escape()
 		.isLength({ min: 8, max: 16 }).withMessage('Длина пароля должна составлять от 8 до 16 символов!'),
 	passwordConfirm: check('password2').trim().escape()
