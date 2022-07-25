@@ -202,18 +202,21 @@ const handlers = (users) => {
 
     users: async (req, res, next) => {
   		let usersList = await users.aggregate([
-  			{$project: {'name': '$username', 'reg_date': '$reg_date', 'imagesCount': {$size: '$images'}}},
-  			{$sort: {'imagesCount': -1}}
+  			{$project: {'name': '$username', 'reg_date': '$reg_date', 'images': '$images', 'imagesCount': {$size: '$images'}}},
+  			{$sort: {'reg_date': -1}}
   		]).toArray()
       usersList = usersList.map((u) => {
-          //let d = new Date(u.reg_date)
-          const date_str = ((new Date(u.reg_date)).toLocaleDateString('ru-RU', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-          }))
-          return {...u, reg_date: date_str}
-        })
+        const date_str = ((new Date(u.reg_date)).toLocaleDateString('ru-RU', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }))
+        return {
+          ...u,
+          likesCount: u.images.reduce((p, c) => p + c.likes.length, 0),
+          reg_date: date_str
+        }
+      })
   		res.renderPage('users', {list: usersList})
   	},
 
