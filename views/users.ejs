@@ -9,13 +9,26 @@
 		<%- include('parts/loginBlock.ejs') %>
 	</div>
 	<div>
-		<ul>
-		<% for(let i=0;i<list.length;i++){ %>
-			<li>
-				<a href="/users/<%= list[i].name %>"><%= list[i].name %></a><% if(list[i].imagesCount){ %> - <%= list[i].imagesCount %><% } %>
-			</li>
-		<% } %>
-		</ul>
+		<table>
+			<thead>
+				<tr>
+					<td>Имя</td>
+					<td>Дата регистрации</td>
+					<td>Кол-во изображений</td>
+					<td>Кол-во лайков</td>
+				</tr>
+			</thead>
+			<tbody>
+			<% for(let i=0;i<list.length;i++){ %>
+				<tr>
+					<td><a href="/users/<%= list[i].name %>"><%= list[i].name %></a></td>
+					<td><%= list[i].reg_date %></td>
+					<td><%= list[i].imagesCount %></td>
+					<td><%= list[i].likesCount %></td>
+				</tr>
+			<% } %>
+			</tbody>
+		</table>
 	</div>
 </body>
 </html>
