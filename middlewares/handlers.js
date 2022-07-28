@@ -149,7 +149,7 @@ const handlers = (users) => {
   		res.renderPage('profile', {...userData, message})
   	},
 
-    profilePost: async (req, res, next) => {
+    profilePost: async (req, res, next) => { // uploading a file
   		let errorMessage = ''
   		let uploadedFilepath = ''
   		let filepath = ''
@@ -157,7 +157,7 @@ const handlers = (users) => {
   			if(!req.file){
   				throw new Error('Укажите файл!')
   			}
-  			uploadedFilepath = path.join(__dirname, req.file.path)
+  			uploadedFilepath = path.join(__dirname, '..', req.file.path)
   			const mimetype = req.file.mimetype.toLowerCase()
   			if(mimetype !== 'image/png' && mimetype !== 'image/jpg' && mimetype !== 'image/jpeg'){
   				throw new Error('Невалидный тип файла (' + mimetype + ')')
@@ -174,7 +174,7 @@ const handlers = (users) => {
   			}
 
   			const filename = Date.now() + path.extname(req.file.originalname)
-  			const userdir = path.join(__dirname, process.env.USERS_UPLOAD_DIR + req.session.username + '/')
+  			const userdir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + req.session.username + '/')
   			filepath = userdir + filename
 
   			const readStream = fs.createReadStream(uploadedFilepath)
