@@ -3,7 +3,7 @@ require('dotenv').config()
 const express = require('express')
 const session = require('express-session')
 const bodyParser = require('body-parser')
-const { MongoClient } = require('mongodb')
+const { MongoClient, ServerApiVersion } = require('mongodb')
 
 const routes = require('./routes')
 
@@ -14,6 +14,7 @@ const PORT = process.env.PORT
 const HOST = process.env.HOST
 const DB_PORT = process.env.DB_PORT
 const DB_HOST = process.env.DB_HOST
+const DB_URI = process.env.DB_URI
 
 const app = express()
 
@@ -29,8 +30,15 @@ app.use(bodyParser.json({limit: '1kb'}))
 app.set('views', './views')
 app.set('view engine', 'ejs')
 
+let client
+if(DB_URI){
+	client = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
+}
+else{
+	client = new MongoClient(`mongodb://${DB_HOST}:${DB_PORT}`)
+}
+
 let dbClient
-const client = new MongoClient(`mongodb://${DB_HOST}:${DB_PORT}`)
 client.connect((err, database) => {
 	if(err){
 		return console.log(err)
