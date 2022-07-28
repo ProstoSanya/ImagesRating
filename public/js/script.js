@@ -33,7 +33,11 @@ document.addEventListener('DOMContentLoaded', (e) => {
 		})
 	}
 	// add or remove like
-	const userId = document.querySelector('#userid').value.trim()
+	let userId = document.querySelector('#userid')
+	if(!userId){
+		return
+	}
+	let userId = userId.value.trim()
 	if(!userId){
 		return
 	}
