@@ -31,6 +31,7 @@ app.set('views', './views')
 app.set('view engine', 'ejs')
 
 let client
+console.log('GCloud =', process.env.GCLOUD)
 if(process.env.GCLOUD){ // Google Cloud
 	client = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
 }
