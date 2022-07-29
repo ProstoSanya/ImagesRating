@@ -28,8 +28,8 @@ module.exports = (app, users) => {
 	app.use('/profile', auth.notLoggedIn)
 	app.get('/profile', handlers.profile)
 
-	const midds = process.env.GCLOUD ? [uploadGCloud, handlers.profilePostGCloud] : [upload, handlers.profilePost]
-	app.post('/profile', midds)
+	//const midds = process.env.GCLOUD ? [uploadGCloud, handlers.profilePostGCloud] : [upload, handlers.profilePost]
+	app.post('/profile', uploadGCloud, handlers.profilePostGCloud)
 
 	app.get('/logout', handlers.logout)
 
