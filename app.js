@@ -38,7 +38,7 @@ if(process.env.GCLOUD){ // Google Cloud
 else{ // localhost
 	client = new MongoClient(`mongodb://${DB_HOST}:${DB_PORT}`)
 }
-console.log('t =', Date.now())
+
 let dbClient
 client.connect((err, database) => {
 	if(err){
@@ -47,10 +47,10 @@ client.connect((err, database) => {
 	dbClient = database
 
 	app.use(setRenderPage)
-
+console.log('t1 =', Date.now())
   const users = database.db('db').collection('users')
 	routes(app, users)
-
+console.log('t2 =', Date.now())
 	app.use(setError404)
 	app.use(sendErrorPage)
 
