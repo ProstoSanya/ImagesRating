@@ -38,7 +38,7 @@ if(process.env.GCLOUD){ // Google Cloud
 else{ // localhost
 	client = new MongoClient(`mongodb://${DB_HOST}:${DB_PORT}`)
 }
-
+console.log('t =', Date.now())
 let dbClient
 client.connect((err, database) => {
 	if(err){
