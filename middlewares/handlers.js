@@ -6,6 +6,8 @@ const stream = require('stream/promises')
 const bcrypt = require('bcryptjs')
 const { ObjectID } = require('mongodb')
 
+const { Storage } = require('@google-cloud/storage')
+
 const removeFile = (filepath) => {
   fs.unlink(filepath, (err) => {
   	console.error(err)
@@ -52,6 +54,9 @@ const handlers = (users) => {
   		'totalLikesCount': findRes.images.reduce((prev, curr) => prev + curr.likes.length, 0)
   	}
   }
+
+  const storage = new Storage()
+  const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET)
 
   return {
     homepage: async (req, res, next) => {
@@ -185,6 +190,78 @@ const handlers = (users) => {
   			if(!updateRes){
   				throw new Error('Возникла ошибка при попытке добавить запись в БД.')
   			}
+  		}
+  		catch(err){
+  			if(filepath){
+  				removeFile(filepath)
+  			}
+  			errorMessage = err.message || 'Возникла ошибка.'
+  		}
+  		if(uploadedFilepath){
+  			removeFile(uploadedFilepath)
+  		}
+  		let params = await getUserData(req.session.userid)
+  		params['error'] = errorMessage
+  		res.renderPage('profile', params)
+  	},
+
+    profilePostGCloud: async (req, res, next) => { // uploading a file
+  		let errorMessage = ''
+  		let uploadedFilepath = ''
+  		let filepath = ''
+  		try{
+  			if(!req.file){
+  				throw new Error('Укажите файл!')
+  			}
+
+        const blob = bucket.file(req.file.originalname)
+        const blobStream = blob.createWriteStream({
+          resumable: false
+        })
+
+        blobStream.on('error', err => {
+          throw new Error(err.message || err.toString())
+        })
+
+        blobStream.on('finish', () => {
+          // The public URL can be used to directly access the file via HTTP.
+          const publicUrl = format(
+            `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+          )
+          //res.status(200).send(publicUrl)
+          console.log(publicUrl)
+        })
+
+        blobStream.end(req.file.buffer)
+
+  			/*uploadedFilepath = path.join(__dirname, '..', req.file.path)
+  			const mimetype = req.file.mimetype.toLowerCase()
+  			if(mimetype !== 'image/png' && mimetype !== 'image/jpg' && mimetype !== 'image/jpeg'){
+  				throw new Error('Невалидный тип файла (' + mimetype + ')')
+  			}
+  			const title = req.body.title.trim()
+  			if(!title){
+  				throw new Error('Укажите название файла')
+  			}
+  			//check filename
+  			const objUserId = ObjectID(req.session.userid)
+  			let findRes = await users.findOne({'_id': objUserId, 'images.title': {$regex: title, $options: '-i'}})
+  			if(findRes){
+  				throw new Error('Файл с таким названием уже существует!')
+  			}
+
+  			const filename = Date.now() + path.extname(req.file.originalname)
+  			const userdir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + req.session.username + '/')
+  			filepath = userdir + filename
+
+  			const readStream = fs.createReadStream(uploadedFilepath)
+  			const writeStream = fs.createWriteStream(filepath)
+
+  			await stream.pipeline(readStream, writeStream)
+  			const updateRes = await users.updateOne({'_id': objUserId}, {$push: {'images': {'filename': filename, 'title': title, 'add_date': (new Date()), 'likes': []}}})
+  			if(!updateRes){
+  				throw new Error('Возникла ошибка при попытке добавить запись в БД.')
+  			}*/
   		}
   		catch(err){
   			if(filepath){

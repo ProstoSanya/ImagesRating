@@ -31,10 +31,10 @@ app.set('views', './views')
 app.set('view engine', 'ejs')
 
 let client
-if(DB_URI){
+if(process.env.GCLOUD){ // Google Cloud
 	client = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
 }
-else{
+else{ // localhost
 	client = new MongoClient(`mongodb://${DB_HOST}:${DB_PORT}`)
 }
 
