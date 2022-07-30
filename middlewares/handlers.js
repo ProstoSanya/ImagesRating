@@ -56,6 +56,7 @@ const handlers = (users) => {
   }
 
   const storage = new Storage()
+  console.log('bucket =', process.env.GCLOUD_STORAGE_BUCKET)
   const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET)
 
   return {
