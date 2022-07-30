@@ -1,5 +1,5 @@
 const validations = require('./validations')
-const upload = require('./middlewares/upload')
+//const up loa d = req uire('./middl ewar es/up lo ad')
 const uploadGCloud = require('./middlewares/uploadGCloud')
 const auth = require('./middlewares/auth')
 
