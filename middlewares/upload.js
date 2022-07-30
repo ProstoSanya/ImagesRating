@@ -1,6 +1,6 @@
-const multer  = require('multer')
+//const multer  = require('multer')
 
-module.exports = console.log('--upload middl--')/*multer({
+module.exports = console.log('--upload middl v2--')/*multer({
 	//storage: multer.memoryStorage(),
 	dest: './uploads/',
 	limits: {
