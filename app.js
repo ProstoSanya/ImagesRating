@@ -17,7 +17,7 @@ const DB_HOST = process.env.DB_HOST
 const DB_URI = process.env.DB_URI
 
 const app = express()
-
+console.log(process.env)
 app.use(express.static(`${__dirname}/public`))
 app.use(session({
 	secret: 'secret',
