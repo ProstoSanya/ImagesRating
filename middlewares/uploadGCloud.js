@@ -1,8 +1,8 @@
-/*con st mul ter  = requi re('mult er')
+const multer  = require('multer')
 
-mod ule.exp orts = mult er({
-	sto rage: mul ter.memoryStorage(),
-	lim its: {
+module.exports = multer({
+	storage: multer.memoryStorage(),
+	limits: {
 		file Size: 1048576 // 1 MB
 	}
-}).sing le('file data')*/
+}).single('filedata')
