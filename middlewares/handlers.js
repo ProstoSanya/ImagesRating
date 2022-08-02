@@ -237,15 +237,10 @@ const handlers = (users) => {
 
           blobStream.on('error', (err) => {
             reject(new Error(err.message || err.toString()))
-            //throw new Error(err.message || err.toString())
           })
           blobStream.on('finish', () => {
-            // The public URL can be used to directly access the file via HTTP.
-            const publicUrl = format(
-              `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-            )
-            console.log(publicUrl)
-            resolve(publicUrl) // 'success'
+            //resolve('success')
+            reject(new Error('error test reject'))
           })
           blobStream.end(req.file.buffer)
         })
