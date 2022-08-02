@@ -239,7 +239,7 @@ const handlers = (users) => {
             reject(new Error(err.message || err.toString()))
           })
           blobStream.on('finish', () => {
-            resolve('success')
+            reject('-test err-')//resolve('success')
           })
           blobStream.end(req.file.buffer)
         })
