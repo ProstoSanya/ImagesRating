@@ -261,7 +261,7 @@ const handlers = (users) => {
   		}
   		catch(err){
   			if(filepath){
-  				removeFile(filepath)
+  				//removeFile(filepath)
   			}
   			errorMessage = err.message || 'Возникла ошибка.'
   		}
