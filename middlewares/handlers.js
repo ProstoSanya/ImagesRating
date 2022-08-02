@@ -149,61 +149,8 @@ const handlers = (users) => {
   		res.renderPage('profile', {...userData, message})
   	},
 
-    /*profilePost: async (req, res, next) => { // uploading a file
-  		let errorMessage = ''
-  		let uploadedFilepath = ''
-  		let filepath = ''
-  		try{
-  			if(!req.file){
-  				throw new Error('Укажите файл!')
-  			}
-  			uploadedFilepath = path.join(__dirname, '..', req.file.path)
-  			const mimetype = req.file.mimetype.toLowerCase()
-  			if(mimetype !== 'image/png' && mimetype !== 'image/jpg' && mimetype !== 'image/jpeg'){
-  				throw new Error('Невалидный тип файла (' + mimetype + ')')
-  			}
-  			const title = req.body.title.trim()
-  			if(!title){
-  				throw new Error('Укажите название файла')
-  			}
-  			//check filename
-  			const objUserId = ObjectID(req.session.userid)
-  			let findRes = await users.findOne({'_id': objUserId, 'images.title': {$regex: title, $options: '-i'}})
-  			if(findRes){
-  				throw new Error('Файл с таким названием уже существует!')
-  			}
-
-  			const filename = Date.now() + path.extname(req.file.originalname)
-  			const userdir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + req.session.username + '/')
-  			filepath = userdir + filename
-
-  			const readStream = fs.createReadStream(uploadedFilepath)
-  			const writeStream = fs.createWriteStream(filepath)
-
-  			await stream.pipeline(readStream, writeStream)
-  			const updateRes = await users.updateOne({'_id': objUserId}, {$push: {'images': {'filename': filename, 'title': title, 'add_date': (new Date()), 'likes': []}}})
-  			if(!updateRes){
-  				throw new Error('Возникла ошибка при попытке добавить запись в БД.')
-  			}
-  		}
-  		catch(err){
-  			if(filepath){
-  				removeFile(filepath)
-  			}
-  			errorMessage = err.message || 'Возникла ошибка.'
-  		}
-  		if(uploadedFilepath){
-  			removeFile(uploadedFilepath)
-  		}
-  		let params = await getUserData(req.session.userid)
-  		params['error'] = errorMessage
-  		res.renderPage('profile', params)
-  	},*/
-
     profilePost: async (req, res, next) => { // uploading a file
   		let errorMessage = ''
-  		let uploadedFilepath = ''
-  		let filepath = ''
   		try{
   			if(!req.file){
   				throw new Error('Укажите файл!')
@@ -225,9 +172,10 @@ const handlers = (users) => {
   			}
 
         const filename = Date.now() + path.extname(req.file.originalname)
+        const filepath = req.session.username + '/' + filename
 
-        const streamResult = await new Promise((resolve, reject) => {
-          const blob = bucket.file(req.session.username + '/' + filename)
+        await new Promise((resolve, reject) => {
+          const blob = bucket.file(filepath)
           const blobStream = blob.createWriteStream({
             resumable: false,
             metadata: {
@@ -239,28 +187,29 @@ const handlers = (users) => {
             reject(new Error(err.message || err.toString()))
           })
           blobStream.on('finish', () => {
-            reject('-test err-')//resolve('success')
+            resolve('success')
           })
           blobStream.end(req.file.buffer)
         })
-        console.log('streamResult = ', streamResult)
-        errorMessage = 'streamResult = ' + streamResult
-
-        const updateRes = await users.updateOne({'_id': objUserId}, {$push: {'images': {'filename': filename, 'title': title, 'add_date': (new Date()), 'likes': []}}})
-        if(!updateRes){
-          throw new Error('Возникла ошибка при попытке добавить запись в БД.')
-        }
   		}
   		catch(err){
-  			if(filepath){
-  				//removeFile(filepath)
-  			}
-  			errorMessage = 'catch(err)' //err.message || 'Возникла ошибка.'
+  			errorMessage = err.message || 'Возникла ошибка.'
   		}
-  		if(uploadedFilepath){
-  			removeFile(uploadedFilepath)
-  		}
-  		let params = await getUserData(req.session.userid)
+
+      if(!errorMessage){ //file successfully uploaded - update data in DB
+        try{
+          const updateRes = await users.updateOne({'_id': objUserId}, {$push: {'images': {'filename': filename, 'title': title, 'add_date': (new Date()), 'likes': []}}})
+          if(!updateRes){
+            throw new Error('Возникла ошибка при попытке добавить запись в БД.')
+          }
+        }
+    		catch(err){
+    			errorMessage = err.message || 'Возникла ошибка.'
+          bucket.file(filepath).delete()
+    		}
+      }
+
+      let params = await getUserData(req.session.userid)
   		params['error'] = errorMessage
   		res.renderPage('profile', params)
   	},
