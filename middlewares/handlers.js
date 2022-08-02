@@ -230,9 +230,9 @@ const handlers = (users) => {
   			}
 
         const filename = Date.now() + path.extname(req.file.originalname)
-        const userdir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + req.session.username + '/')
+        //const userdir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + req.session.username + '/')
 
-        const blob = bucket.file(userdir + filename)
+        const blob = bucket.file(req.session.username + '/' + filename)
         const blobStream = blob.createWriteStream({
           resumable: false,
           metadata: {
