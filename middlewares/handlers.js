@@ -225,9 +225,8 @@ const handlers = (users) => {
   			}
 
         const filename = Date.now() + path.extname(req.file.originalname)
-<<<<<<< HEAD
 
-        const streamResult = await new Promise((resolve, reject) => {
+        //const streamResult = await new Promise((resolve, reject) => {
           const blob = bucket.file(req.session.username + '/' + filename)
           const blobStream = blob.createWriteStream({
             resumable: false,
@@ -235,17 +234,6 @@ const handlers = (users) => {
               contentType: req.file.mimetype
             }
           })
-=======
-        const blob = bucket.file(req.session.username + '/' + filename)
-        const blobStream = blob.createWriteStream({
-          resumable: false,
-          metadata: {
-            contentType: req.file.mimetype
-          }
-        })
-
-        const streamResult = await new Promise((resolve, reject) => {
->>>>>>> e4138b76d259e3f70146010967f2c74edca73e7a
 
           blobStream.on('error', (err) => {
             reject(new Error(err.message || err.toString()))
@@ -259,20 +247,11 @@ const handlers = (users) => {
             resolve(publicUrl) // 'success'
           })
           blobStream.end(req.file.buffer)
-<<<<<<< HEAD
-        })
-        console.log('streamResult = ', streamResult)
-        errorMessage = 'streamResult = ' + streamResult
+        //})
+        //console.log('streamResult = ', streamResult)
+      //  errorMessage = 'streamResult = ' + streamResult
 
 
-=======
-
-        })
-        console.log('streamResult = ', streamResult)
-        errorMessage = 'streamResult = ' + streamResult
-
-
->>>>>>> e4138b76d259e3f70146010967f2c74edca73e7a
         const updateRes = await users.updateOne({'_id': objUserId}, {$push: {'images': {'filename': filename, 'title': title, 'add_date': (new Date()), 'likes': []}}})
         if(!updateRes){
           throw new Error('Возникла ошибка при попытке добавить запись в БД.')
