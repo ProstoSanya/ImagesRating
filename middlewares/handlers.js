@@ -245,7 +245,7 @@ const handlers = (users) => {
           throw new Error(err.message || err.toString())
         })
 
-        blobStream.on('finish', () => {
+        blobStream.on('finish', async () => {
           // The public URL can be used to directly access the file via HTTP.
           const publicUrl = format(
             `https://storage.googleapis.com/${bucket.name}/${blob.name}`
