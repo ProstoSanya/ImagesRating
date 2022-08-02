@@ -3,6 +3,7 @@ const setRenderPage = (req, res, next) => {
   res.renderPage = (tpl, params) => res.render(
     tpl,
     Object.assign(
+<<<<<<< HEAD
       {
         error: '',
         message: '',
@@ -10,6 +11,9 @@ const setRenderPage = (req, res, next) => {
         images: [],
         bucket_url: 'https://storage.googleapis.com/' + process.env.GCLOUD_STORAGE_BUCKET
       },
+=======
+      {error: '', message: '', loggedin: false, images: [], bucket: process.env.GCLOUD_STORAGE_BUCKET},
+>>>>>>> 805dc850620427bff4578821316253bfd5dc0633
       req.session,
       params
     )
