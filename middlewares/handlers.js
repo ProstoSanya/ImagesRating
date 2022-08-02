@@ -96,12 +96,6 @@ const handlers = (users) => {
   				'images': [] // [ {'title':'', 'filename (on server)':'', 'time':'', 'likes': [user_id, user_id, ...]}, {...}, ...]
   			})
 
-  			//create dir for images
-  			/*const dir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + username + '/')
-  			if(!fs.existsSync(dir)){
-  				fs.mkdirSync(dir)
-  			}*/
-
   			req.session.loggedin = true
   			req.session.username = username
   			req.session.userid = insertRes.insertedId.toString()
@@ -231,34 +225,37 @@ const handlers = (users) => {
   			}
 
         const filename = Date.now() + path.extname(req.file.originalname)
-        //const userdir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + req.session.username + '/')
 
-        const blob = bucket.file(req.session.username + '/' + filename)
-        const blobStream = blob.createWriteStream({
-          resumable: false,
-          metadata: {
-            contentType: req.file.mimetype
-          }
+        const streamResult = await new Promise((resolve, reject) => {
+          const blob = bucket.file(req.session.username + '/' + filename)
+          const blobStream = blob.createWriteStream({
+            resumable: false,
+            metadata: {
+              contentType: req.file.mimetype
+            }
+          })
+
+          blobStream.on('error', (err) => {
+            reject(new Error(err.message || err.toString()))
+          })
+          blobStream.on('finish', () => {
+            // The public URL can be used to directly access the file via HTTP.
+            const publicUrl = format(
+              `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+            )
+            console.log(publicUrl)
+            resolve(publicUrl) // 'success'
+          })
+          blobStream.end(req.file.buffer)
         })
+        console.log('streamResult = ', streamResult)
+        errorMessage = 'streamResult = ' + streamResult
 
-        blobStream.on('error', (err) => {
-          throw new Error(err.message || err.toString())
-        })
 
-        blobStream.on('finish', async () => {
-          // The public URL can be used to directly access the file via HTTP.
-          const publicUrl = format(
-            `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-          )
-          errorMessage = 'publicUrl = ' + publicUrl
-          console.log(publicUrl)
-          const updateRes = await users.updateOne({'_id': objUserId}, {$push: {'images': {'filename': filename, 'title': title, 'add_date': (new Date()), 'likes': []}}})
-    			if(!updateRes){
-    				throw new Error('Возникла ошибка при попытке добавить запись в БД.')
-    			}
-        })
-
-        blobStream.end(req.file.buffer)
+        const updateRes = await users.updateOne({'_id': objUserId}, {$push: {'images': {'filename': filename, 'title': title, 'add_date': (new Date()), 'likes': []}}})
+        if(!updateRes){
+          throw new Error('Возникла ошибка при попытке добавить запись в БД.')
+        }
   		}
   		catch(err){
   			if(filepath){
