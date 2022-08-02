@@ -17,7 +17,7 @@ const DB_HOST = process.env.DB_HOST
 const DB_URI = process.env.DB_URI
 
 const app = express()
-console.log(process.env)
+
 app.use(express.static(`${__dirname}/public`))
 app.use(session({
 	secret: 'secret',
@@ -31,8 +31,8 @@ app.set('views', './views')
 app.set('view engine', 'ejs')
 
 let client
-console.log('GCloud =', process.env.GCLOUD)
-if(process.env.GCLOUD){ // Google Cloud
+
+if(DB_URI){
 	client = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
 }
 else{ // localhost
@@ -47,10 +47,10 @@ client.connect((err, database) => {
 	dbClient = database
 
 	app.use(setRenderPage)
-console.log('t1 =', Date.now())
+
   const users = database.db('db').collection('users')
 	routes(app, users)
-console.log('t2 =', Date.now())
+
 	app.use(setError404)
 	app.use(sendErrorPage)
 

@@ -1,8 +1,7 @@
-const multer = require('multer')
+const multer  = require('multer')
 
 module.exports = multer({
-	//storage: multer.memoryStorage(),
-	dest: './uploads/',
+	storage: multer.memoryStorage(),
 	limits: {
 		fileSize: 1048576 // 1 MB
 	}

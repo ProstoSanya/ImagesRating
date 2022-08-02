@@ -155,7 +155,7 @@ const handlers = (users) => {
   		res.renderPage('profile', {...userData, message})
   	},
 
-    profilePost: async (req, res, next) => { // uploading a file
+    /*profilePost: async (req, res, next) => { // uploading a file
   		let errorMessage = ''
   		let uploadedFilepath = ''
   		let filepath = ''
@@ -204,9 +204,9 @@ const handlers = (users) => {
   		let params = await getUserData(req.session.userid)
   		params['error'] = errorMessage
   		res.renderPage('profile', params)
-  	},
+  	},*/
 
-    profilePostGCloud: async (req, res, next) => { // uploading a file
+    profilePost: async (req, res, next) => { // uploading a file
   		let errorMessage = ''
   		let uploadedFilepath = ''
   		let filepath = ''
@@ -234,35 +234,6 @@ const handlers = (users) => {
         })
 
         blobStream.end(req.file.buffer)
-
-  			/*uploadedFilepath = path.join(__dirname, '..', req.file.path)
-  			const mimetype = req.file.mimetype.toLowerCase()
-  			if(mimetype !== 'image/png' && mimetype !== 'image/jpg' && mimetype !== 'image/jpeg'){
-  				throw new Error('Невалидный тип файла (' + mimetype + ')')
-  			}
-  			const title = req.body.title.trim()
-  			if(!title){
-  				throw new Error('Укажите название файла')
-  			}
-  			//check filename
-  			const objUserId = ObjectID(req.session.userid)
-  			let findRes = await users.findOne({'_id': objUserId, 'images.title': {$regex: title, $options: '-i'}})
-  			if(findRes){
-  				throw new Error('Файл с таким названием уже существует!')
-  			}
-
-  			const filename = Date.now() + path.extname(req.file.originalname)
-  			const userdir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + req.session.username + '/')
-  			filepath = userdir + filename
-
-  			const readStream = fs.createReadStream(uploadedFilepath)
-  			const writeStream = fs.createWriteStream(filepath)
-
-  			await stream.pipeline(readStream, writeStream)
-  			const updateRes = await users.updateOne({'_id': objUserId}, {$push: {'images': {'filename': filename, 'title': title, 'add_date': (new Date()), 'likes': []}}})
-  			if(!updateRes){
-  				throw new Error('Возникла ошибка при попытке добавить запись в БД.')
-  			}*/
   		}
   		catch(err){
   			if(filepath){

@@ -1,6 +1,5 @@
 const validations = require('./validations')
-/*const upload = require('./middlewares/upload')*/
-const uploadGCloud = require('./middlewares/uploadGCloud')
+const upload = require('./middlewares/upload')
 const auth = require('./middlewares/auth')
 
 module.exports = (app, users) => {
@@ -28,9 +27,7 @@ module.exports = (app, users) => {
 
 	app.use('/profile', auth.notLoggedIn)
 	app.get('/profile', handlers.profile)
-
-	//const midds = process.env.GCLOUD ? [uploadGCloud, handlers.profilePostGCloud] : [upload, handlers.profilePost]
-	app.post('/profile', uploadGCloud, handlers.profilePostGCloud) // up loa dGClo ud,
+	app.post('/profile', upload, handlers.profilePost)
 
 	app.get('/logout', handlers.logout)
 
