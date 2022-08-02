@@ -56,7 +56,6 @@ const handlers = (users) => {
   }
 
   const storage = new Storage()
-  console.log('bucket =', process.env.GCLOUD_STORAGE_BUCKET)
   const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET)
 
   return {
@@ -97,10 +96,10 @@ const handlers = (users) => {
   			})
 
   			//create dir for images
-  			const dir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + username + '/')
+  			/*const dir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + username + '/')
   			if(!fs.existsSync(dir)){
   				fs.mkdirSync(dir)
-  			}
+  			}*/
 
   			req.session.loggedin = true
   			req.session.username = username
@@ -215,12 +214,33 @@ const handlers = (users) => {
   				throw new Error('Укажите файл!')
   			}
 
-        const blob = bucket.file(req.file.originalname)
+        const mimetype = req.file.mimetype.toLowerCase()
+  			if(mimetype !== 'image/png' && mimetype !== 'image/jpg' && mimetype !== 'image/jpeg'){
+  				throw new Error('Невалидный тип файла (' + mimetype + ')')
+  			}
+  			const title = req.body.title.trim()
+  			if(!title){
+  				throw new Error('Укажите название файла')
+  			}
+        //check image title
+  			const objUserId = ObjectID(req.session.userid)
+  			let findRes = await users.findOne({'_id': objUserId, 'images.title': {$regex: title, $options: '-i'}})
+  			if(findRes){
+  				throw new Error('Файл с таким названием уже существует!')
+  			}
+
+        const filename = Date.now() + path.extname(req.file.originalname)
+        const userdir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + req.session.username + '/')
+
+        const blob = bucket.file(userdir + filename)
         const blobStream = blob.createWriteStream({
-          resumable: false
+          resumable: false,
+          metadata: {
+            contentType: req.file.mimetype
+          }
         })
 
-        blobStream.on('error', err => {
+        blobStream.on('error', (err) => {
           throw new Error(err.message || err.toString())
         })
 
@@ -229,8 +249,8 @@ const handlers = (users) => {
           const publicUrl = format(
             `https://storage.googleapis.com/${bucket.name}/${blob.name}`
           )
-          //res.status(200).send(publicUrl)
           console.log(publicUrl)
+          //res.status(200).send(publicUrl)
         })
 
         blobStream.end(req.file.buffer)
