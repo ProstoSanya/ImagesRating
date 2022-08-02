@@ -230,9 +230,9 @@ const handlers = (users) => {
   			}
 
         const filename = Date.now() + path.extname(req.file.originalname)
-        const userdir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + req.session.username + '/')
+        //const userdir = path.join(__dirname, '../' + process.env.USERS_UPLOAD_DIR + req.session.username + '/')
 
-        const blob = bucket.file(userdir + filename)
+        const blob = bucket.file(req.session.username + '/' + filename)
         const blobStream = blob.createWriteStream({
           resumable: false,
           metadata: {
@@ -249,8 +249,12 @@ const handlers = (users) => {
           const publicUrl = format(
             `https://storage.googleapis.com/${bucket.name}/${blob.name}`
           )
+          errorMessage = 'publicUrl = ' + publicUrl
           console.log(publicUrl)
-          //res.status(200).send(publicUrl)
+          const updateRes = await users.updateOne({'_id': objUserId}, {$push: {'images': {'filename': filename, 'title': title, 'add_date': (new Date()), 'likes': []}}})
+    			if(!updateRes){
+    				throw new Error('Возникла ошибка при попытке добавить запись в БД.')
+    			}
         })
 
         blobStream.end(req.file.buffer)

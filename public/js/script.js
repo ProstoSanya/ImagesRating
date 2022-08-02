@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
 	if(!userId){
 		return
 	}
-	let userId = userId.value.trim()
+	userId = userId.value.trim()
 	if(!userId){
 		return
 	}
