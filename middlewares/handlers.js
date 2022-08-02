@@ -226,7 +226,7 @@ const handlers = (users) => {
 
         const filename = Date.now() + path.extname(req.file.originalname)
 
-        //const streamResult = await new Promise((resolve, reject) => {
+        const streamResult = await new Promise((resolve, reject) => {
           const blob = bucket.file(req.session.username + '/' + filename)
           const blobStream = blob.createWriteStream({
             resumable: false,
@@ -236,8 +236,8 @@ const handlers = (users) => {
           })
 
           blobStream.on('error', (err) => {
-            //reject(new Error(err.message || err.toString()))
-            throw new Error(err.message || err.toString())
+            reject(new Error(err.message || err.toString()))
+            //throw new Error(err.message || err.toString())
           })
           blobStream.on('finish', () => {
             // The public URL can be used to directly access the file via HTTP.
@@ -245,14 +245,12 @@ const handlers = (users) => {
               `https://storage.googleapis.com/${bucket.name}/${blob.name}`
             )
             console.log(publicUrl)
-            //resolve(publicUrl) // 'success'
+            resolve(publicUrl) // 'success'
           })
           blobStream.end(req.file.buffer)
-        //})
-        //console.log('streamResult = ', streamResult)
-      //  errorMessage = 'streamResult = ' + streamResult
-      //
-
+        })
+        console.log('streamResult = ', streamResult)
+        errorMessage = 'streamResult = ' + streamResult
 
         const updateRes = await users.updateOne({'_id': objUserId}, {$push: {'images': {'filename': filename, 'title': title, 'add_date': (new Date()), 'likes': []}}})
         if(!updateRes){
