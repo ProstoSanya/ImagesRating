@@ -20,9 +20,12 @@ const app = express()
 
 app.use(express.static(`${__dirname}/public`))
 app.use(session({
-	secret: 'secret',
+	secret: 'sess-secret',
 	resave: true,
-	saveUninitialized: true
+	saveUninitialized: true,
+	cookie: {
+		expires: 6 * 60 * 60 * 1000 // 6 hours
+	}
 }))
 app.use(bodyParser.urlencoded({extended: true, limit: '1kb'}))
 app.use(bodyParser.json({limit: '1kb'}))
