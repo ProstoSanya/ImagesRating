@@ -49,7 +49,10 @@ document.addEventListener('DOMContentLoaded', (e) => {
 		imagesListElem.querySelectorAll('.likeInfo').forEach((likeInfoElem) => {
 			likeInfoElem.classList.add('cursor_pointer')
 			likeInfoElem.addEventListener('click', (ee) => {
-				const elem = (ee.target || ee.src).parentNode
+				const elem = ee.target || ee.src
+				if(!elem.dataset['filename']){
+					elem = elem.parentNode
+				}
 				const author_id = authorId ? authorId : elem.dataset['authorid'].trim()
 				if(author_id == userId){
 					return
