@@ -8,12 +8,6 @@ const { ObjectID } = require('mongodb')
 
 const { Storage } = require('@google-cloud/storage')
 
-const removeFile = (filepath) => {
-  fs.unlink(filepath, (err) => {
-  	console.error(err)
-  })
-}
-
 const handlers = (users) => {
 
   const getImages = async (sortBy, limit = 0) => {
