@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
 	if(!userId){
 		return
 	}
-	let userId = userId.value.trim()
+	userId = userId.value.trim()
 	if(!userId){
 		return
 	}
@@ -65,8 +65,6 @@ document.addEventListener('DOMContentLoaded', (e) => {
 				const xmlhttp = getXmlHttp()
 				xmlhttp.open('POST', '/ajax', true)
 				xmlhttp.setRequestHeader('X-REQUESTED-WITH', 'XMLHttpRequest')
-				//xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
-				//xmlhttp.send('authorid=' + author_id + '&filename=' + filename)
 				xmlhttp.setRequestHeader('Content-Type', 'application/json')
 				xmlhttp.send(JSON.stringify({authorid: author_id, filename}))
 				xmlhttp.onreadystatechange = () => {

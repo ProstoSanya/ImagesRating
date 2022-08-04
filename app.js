@@ -57,10 +57,11 @@ client.connect((err, database) => {
 })
 
 process.on('SIGINT', async () => { // прослушиваем прерывание работы программы (ctrl-c)
-    await dbClient.close()
-    process.exit()
+	await dbClient.close()
+	process.exit()
 })
 
 process.on('uncaughtException', (err) => { // clean up allocated resources
-    process.exit()
+	console.log(err)
+	process.exit()
 })
