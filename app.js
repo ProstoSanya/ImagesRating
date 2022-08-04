@@ -12,9 +12,12 @@ const { setError404, sendErrorPage } = require('./middlewares/errors')
 
 const PORT = process.env.PORT
 const HOST = process.env.HOST
-const DB_PORT = process.env.DB_PORT
-const DB_HOST = process.env.DB_HOST
 const DB_URI = process.env.DB_URI
+
+if(!DB_URI){
+	console.error('Укажите параметр DB_URI в ".env"-файле')
+	process.exit(1)
+}
 
 const app = express()
 
@@ -33,14 +36,7 @@ app.use(bodyParser.json({limit: '1kb'}))
 app.set('views', './views')
 app.set('view engine', 'ejs')
 
-let client
-
-if(DB_URI){
-	client = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
-}
-else{ // localhost
-	client = new MongoClient(`mongodb://${DB_HOST}:${DB_PORT}`)
-}
+let client = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
 
 let dbClient
 client.connect((err, database) => {
