@@ -56,12 +56,17 @@ client.connect((err, database) => {
 	app.listen(PORT, HOST, () => console.log(`Server listens http://${HOST}:${PORT}`))
 })
 
-process.on('SIGINT', async () => { // прослушиваем прерывание работы программы (ctrl-c)
-	await dbClient.close()
+process.on('SIGINT', async () => { // ctrl-c
+	if(dbClient){
+		await dbClient.close()
+	}
 	process.exit()
 })
 
-process.on('uncaughtException', (err) => { // clean up allocated resources
+process.on('uncaughtException', (err) => {
 	console.log(err)
-	process.exit()
+	if(dbClient){
+		await dbClient.close()
+	}
+	process.exitCode = 1 // process.exit()
 })
