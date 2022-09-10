@@ -143,8 +143,12 @@ const handlers = (users) => {
   	},
 
     profilePost: async (req, res, next) => { // uploading a file
-  		let errorMessage = ''
-      let filepath = ''
+      const objUserId = ObjectID(req.session.userid)
+      const filename = Date.now() + path.extname(req.file.originalname)
+      const filepath = req.session.username + '/' + filename
+      const title = req.body.title.trim()
+    	let errorMessage = ''
+
   		try{
   			if(!req.file){
   				throw new Error('Укажите файл!')
@@ -154,20 +158,15 @@ const handlers = (users) => {
   			if(mimetype !== 'image/png' && mimetype !== 'image/jpg' && mimetype !== 'image/jpeg'){
   				throw new Error('Невалидный тип файла (' + mimetype + ')')
   			}
-  			const title = req.body.title.trim()
   			if(!title){
   				throw new Error('Укажите название файла')
   			}
         //check image title
-  			const objUserId = ObjectID(req.session.userid)
   			let findRes = await users.findOne({'_id': objUserId, 'images.title': {$regex: title, $options: '-i'}})
   			if(findRes){
   				throw new Error('Файл с таким названием уже существует!')
   			}
-
-        const filename = Date.now() + path.extname(req.file.originalname)
-        filepath = req.session.username + '/' + filename
-
+        
         await new Promise((resolve, reject) => {
           const blob = bucket.file(filepath)
           const blobStream = blob.createWriteStream({
