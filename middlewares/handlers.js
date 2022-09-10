@@ -144,6 +144,7 @@ const handlers = (users) => {
 
     profilePost: async (req, res, next) => { // uploading a file
   		let errorMessage = ''
+      let filepath = ''
   		try{
   			if(!req.file){
   				throw new Error('Укажите файл!')
@@ -165,7 +166,7 @@ const handlers = (users) => {
   			}
 
         const filename = Date.now() + path.extname(req.file.originalname)
-        const filepath = req.session.username + '/' + filename
+        filepath = req.session.username + '/' + filename
 
         await new Promise((resolve, reject) => {
           const blob = bucket.file(filepath)
@@ -198,7 +199,9 @@ const handlers = (users) => {
         }
     		catch(err){
     			errorMessage = err.message || 'Возникла ошибка.'
-          bucket.file(filepath).delete()
+          if(filepath){
+            bucket.file(filepath).delete()
+          }
     		}
       }
 
