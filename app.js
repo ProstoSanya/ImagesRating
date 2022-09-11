@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const express = require('express')
-const session = require('express-session')
+const session = require('cookie-session')
 const bodyParser = require('body-parser')
 const { MongoClient, ServerApiVersion } = require('mongodb')
 
@@ -21,7 +21,7 @@ const app = express()
 app.use(express.static(`${__dirname}/public`))
 app.use(session({
 	secret: 'secret',
-	resave: true,
+	resave: false,
 	saveUninitialized: true
 }))
 app.use(bodyParser.urlencoded({extended: true, limit: '1kb'}))
@@ -30,43 +30,42 @@ app.use(bodyParser.json({limit: '1kb'}))
 app.set('views', './views')
 app.set('view engine', 'ejs')
 
-let client
+let mongoClient
 if(DB_URI){
-	client = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
+	mongoClient = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
 }
 else{
-	client = new MongoClient(`mongodb://${DB_HOST}:${DB_PORT}`)
+	mongoClient = new MongoClient(`mongodb://${DB_HOST}:${DB_PORT}`)
 }
 
-let dbClient
-client.connect((err, database) => {
-	if(err){
-		return console.log(err)
-	}
-	dbClient = database
+const connectAsync = async () => {
+	await mongoClient.connect()
+}
+connectAsync()
 
-	app.use(setRenderPage)
+app.use(setRenderPage)
 
-  const users = database.db('db').collection('users')
-	routes(app, users)
+const users = mongoClient.db('db').collection('users')
+routes(app, users)
 
-	app.use(setError404)
-	app.use(sendErrorPage)
+app.use(setError404)
+app.use(sendErrorPage)
 
-	app.listen(PORT, HOST, () => console.log(`Server listens http://${HOST}:${PORT}`))
-})
+app.listen(PORT, HOST, () => console.log(`Server listens http://${HOST}:${PORT}`))
 
 process.on('SIGINT', async () => { // ctrl-c
-	if(dbClient){
-		await dbClient.close()
+	if(mongoClient){
+		await mongoClient.close()
 	}
 	process.exit()
 })
 
-process.on('uncaughtException', (err) => {
-	console.log(err)
-	if(dbClient){
-		await dbClient.close()
+process.on('uncaughtException', async (err) => {
+	console.error(err)
+	if(mongoClient){
+		await mongoClient.close()
 	}
 	process.exitCode = 1 // process.exit()
 })
+
+module.exports = app // для тестирования
