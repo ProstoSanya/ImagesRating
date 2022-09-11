@@ -53,18 +53,18 @@ app.use(sendErrorPage)
 
 app.listen(PORT, HOST, () => console.log(`Server listens http://${HOST}:${PORT}`))
 
-process.on('SIGINT', async () => { // ctrl-c
-	if(mongoClient){
+const mongoClientClose = async () => {
+	if(mongoClient && mongoClient?.topology?.isConnected && mongoClient.topology.isConnected()){
 		await mongoClient.close()
 	}
+}
+process.on('SIGINT', async () => { // ctrl-c
+	mongoClientClose()
 	process.exit()
 })
-
-process.on('uncaughtException', async (err) => {
+process.on('uncaughtException', (err) => {
 	console.error(err)
-	if(mongoClient){
-		await mongoClient.close()
-	}
+	mongoClientClose()
 	process.exitCode = 1 // process.exit()
 })
 
