@@ -38,10 +38,10 @@ else{
 	mongoClient = new MongoClient(`mongodb://${DB_HOST}:${DB_PORT}`)
 }
 
-const connectAsync = async () => {
+const connectSync = async () => {
 	await mongoClient.connect()
 }
-connectAsync()
+connectSync()
 
 app.use(setRenderPage)
 
