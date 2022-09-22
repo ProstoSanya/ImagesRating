@@ -1,20 +1,28 @@
+process.env.NODE_ENV = 'test'
+
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const app = require('./app')
-//const expect = chai.expect
+const expect = chai.expect
 
 chai.should()
 chai.use(chaiHttp)
 const agent = chai.request.agent(app)
 
-const USERNAME = 'usertest'
-const USEREMAIL = 'usertest@mail.com'
-const PASSWORD = 'mypassword123'
-const IMAGENAME = 'ejik' // название единственного загруженного изображения этим пользователем
+describe('check pages', () => {
 
-describe('Login', () => {
-  /*beforeEach((done) => {
-  })*/
+  it('get main page', (done) => {
+    agent
+      .get('/')
+      .end((err, res) => {
+        if(err){
+          return done(err)
+        }
+        res.should.have.status(200)
+        res.text.should.include('Последние изображения')
+        done()
+      })
+  })
 
   it('get profile page', (done) => {
     agent
@@ -24,39 +32,48 @@ describe('Login', () => {
           return done(err)
         }
         res.should.have.status(200)
-        res.redirects.length.should.be.eql(1)
-        new URL(res.redirects[0]).pathname.should.be.eql('/login')
-        //res.body.should.be.a('array')
-        //res.body.length.should.be.eql(0)
+        res.redirects.should.be.a('array')
+        expect(res.redirects.length).to.equal(1)
+        expect((new URL(res.redirects[0])).pathname).to.equal('/login')
         done()
       })
   })
 
-  it('get login page', (done) => {
+  it('get registration page', (done) => {
     agent
-      .get('/login')
+      .get('/registration')
       .end((err, res) => {
         if(err){
           return done(err)
         }
         res.should.have.status(200)
-        //res.body.should.be.a('array')
-        //res.body.length.should.be.eql(0)
+        res.text.should.include('Зарегистрироваться')
         done()
       })
   })
 
-
-  //http://127.0.0.1:8080/profile
-  /*it('authorization', (done) => {
-    chai.request(app)
-      .post('/login')
+  it('get gallery page (sortBy - latest)', (done) => {
+    agent
+      .get('/gallery?sortBy=latest')
       .end((err, res) => {
+        if(err){
+          return done(err)
+        }
         res.should.have.status(200)
-        //res.body.should.be.a('array')
-        //res.body.length.should.be.eql(0)
         done()
       })
-  })*/
+  })
+
+  it('get gallery page (sortBy - popular)', (done) => {
+    agent
+      .get('/gallery?sortBy=popular')
+      .end((err, res) => {
+        if(err){
+          return done(err)
+        }
+        res.should.have.status(200)
+        done()
+      })
+  })
 
 })
