@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "SET NODE_ENV=test && mocha test.js",
+    "test": "set NODE_ENV=test && mocha test.js",
     "start": "node app.js"
   },
   "author": "",
