@@ -3,11 +3,12 @@ process.env.NODE_ENV = 'test'
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const app = require('./app')
-const expect = chai.expect
+//const expect = chai.expect
 
-chai.should()
 chai.use(chaiHttp)
 const agent = chai.request.agent(app)
+const should = chai.should()
+
 
 describe('check pages', () => {
 
@@ -32,9 +33,12 @@ describe('check pages', () => {
           return done(err)
         }
         res.should.have.status(200)
-        res.redirects.should.be.a('array')
-        expect(res.redirects.length).to.equal(1)
-        expect((new URL(res.redirects[0])).pathname).to.equal('/login')
+        res.redirects.should.be.an('array')
+        //expect(res.redirects.length).to.equal(1)
+        should.equal(res.redirects.length, 1)
+        //expect((new URL(res.redirects[0])).pathname).to.equal('/login')
+        const { pathname } = new URL(res.redirects[0])
+        should.equal(pathname, '/login')
         done()
       })
   })
