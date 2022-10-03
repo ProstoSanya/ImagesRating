@@ -35,9 +35,10 @@ app.set('view engine', 'ejs')
 
 let mongoClient = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
 
-(async () => {
+const connectSync = async () => {
 	await mongoClient.connect()
-})()
+}
+connectSync()
 
 app.use(setRenderPage)
 
