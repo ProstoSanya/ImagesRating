@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const express = require('express')
-const session = require('express-session')
+const session = require('cookie-session')
 const bodyParser = require('body-parser')
 const { MongoClient, ServerApiVersion } = require('mongodb')
 
@@ -23,12 +23,9 @@ const app = express()
 
 app.use(express.static(`${__dirname}/public`))
 app.use(session({
-	secret: 'sess-secret',
-	resave: true,
-	saveUninitialized: true,
-	cookie: {
-		expires: 6 * 60 * 60 * 1000 // 6 hours
-	}
+	secret: 'secret',
+	resave: false,
+	saveUninitialized: true
 }))
 app.use(bodyParser.urlencoded({extended: true, limit: '1kb'}))
 app.use(bodyParser.json({limit: '1kb'}))
@@ -36,37 +33,37 @@ app.use(bodyParser.json({limit: '1kb'}))
 app.set('views', './views')
 app.set('view engine', 'ejs')
 
-let client = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
+let mongoClient = new MongoClient(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
 
-let dbClient
-client.connect((err, database) => {
-	if(err){
-		return console.log(err)
+(async () => {
+	await mongoClient.connect()
+})()
+
+app.use(setRenderPage)
+
+const users = mongoClient.db('db').collection('users')
+routes(app, users)
+
+app.use(setError404)
+app.use(sendErrorPage)
+
+app.listen(PORT, HOST, () => console.log(`Server listens http://${HOST}:${PORT}`))
+
+const mongoClientClose = async () => {
+	if(mongoClient && mongoClient?.topology?.isConnected && mongoClient.topology.isConnected()){
+		await mongoClient.close()
 	}
-	dbClient = database
+}
 
-	app.use(setRenderPage)
-
-  const users = database.db('db').collection('users')
-	routes(app, users)
-
-	app.use(setError404)
-	app.use(sendErrorPage)
-
-	app.listen(PORT, HOST, () => console.log(`Server listens http://${HOST}:${PORT}`))
-})
-
-process.on('SIGINT', async () => { // ctrl-c
-	if(dbClient){
-		await dbClient.close()
-	}
+process.on('SIGINT', () => { // ctrl-c
+	mongoClientClose()
 	process.exit()
 })
 
 process.on('uncaughtException', (err) => {
-	console.log(err)
-	if(dbClient){
-		await dbClient.close()
-	}
+	console.error(err)
+	mongoClientClose()
 	process.exitCode = 1 // process.exit()
 })
+
+module.exports = app // для тестирования
