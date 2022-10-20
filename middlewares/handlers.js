@@ -72,7 +72,7 @@ const handlers = (users) => {
   			}
 
   			const { username, password, email } = req.body
-  			const findRes = await users.findOne({$or:[{'email': {$regex: email, $options: '-i'}}, {'username': {$regex: username, $options: '-i'}}]})
+  			const findRes = await users.findOne({$or:[{'email': {$regex: email, $options: 'i'}}, {'username': {$regex: username, $options: 'i'}}]})
   			if(findRes){
   				if(findRes.email.toLowerCase() == email.toLowerCase()){
   					throw new Error('Такая почта уже занята!')
@@ -114,7 +114,7 @@ const handlers = (users) => {
     loginPost: async (req, res, next) => {
   		const { username, password } = req.body
   		if(username && password){
-  			const findRes = await users.findOne({$or:[{'email': {$regex: username, $options: '-i'}}, {'username': {$regex: username, $options: '-i'}}]})
+  			const findRes = await users.findOne({$or:[{'email': {$regex: username, $options: 'i'}}, {'username': {$regex: username, $options: 'i'}}]})
   			if(findRes){
   				if(bcrypt.compareSync(password, findRes.password)){
   					req.session.loggedin = true
@@ -168,7 +168,7 @@ const handlers = (users) => {
   			}
   			//check filename
   			const objUserId = ObjectID(req.session.userid)
-  			let findRes = await users.findOne({'_id': objUserId, 'images.title': {$regex: title, $options: '-i'}})
+  			let findRes = await users.findOne({'_id': objUserId, 'images.title': {$regex: title, $options: 'i'}})
   			if(findRes){
   				throw new Error('Файл с таким названием уже существует!')
   			}
