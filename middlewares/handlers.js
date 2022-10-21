@@ -206,7 +206,15 @@ const handlers = (users) => {
           'name': '$username',
           'reg_date': '$reg_date',
           'images': '$images',
-          'imagesCount': {$size: '$images'}
+          'imagesCount': {
+            $size: {
+              '$cond': [
+                {'$isArray': '$images'},
+                '$images',
+                []
+              ]
+            }
+          }
         }},
   			{$sort: {'reg_date': -1}}
   		]).toArray()
