@@ -48,8 +48,8 @@ const handlers = (users) => {
   		'images': findRes.images.slice(-4), // последние 4 штуки
   		'email': findRes.email,
   		'reg_date': findRes.reg_date,
-  		'totalImagesCount': findRes.images.length,
-  		'totalLikesCount': findRes.images.reduce((prev, curr) => prev + curr.likes.length, 0)
+  		'totalImagesCount': findRes.images ? findRes.images.length : 0,
+  		'totalLikesCount': findRes.images ? findRes.images.reduce((prev, curr) => prev + curr.likes.length, 0) : 0
   	}
   }
 
@@ -226,7 +226,7 @@ const handlers = (users) => {
         }))
         return {
           ...u,
-          likesCount: u.images.reduce((p, c) => p + c.likes.length, 0),
+          likesCount: u.images ? u.images.reduce((p, c) => p + c.likes.length, 0) : 0,
           reg_date: date_str
         }
       })
@@ -238,9 +238,11 @@ const handlers = (users) => {
   		if(data){
   			const authorid = data._id.toString()
   			const authorname = data.username
-  			const images = data.images.map((img) => {
-  				return {username: data.username, _id: authorid, filename: img.filename, likes: img.likes, likesCount: img.likes.length, title: img.title}
-  			})
+  			const images = data.images
+          ? data.images.map((img) => {
+    				return {username: data.username, _id: authorid, filename: img.filename, likes: img.likes, likesCount: img.likes.length, title: img.title}
+    			})
+          : []
   			return res.renderPage('user', {images, authorid, authorname, isUserPage: true})
   		}
   		next() // Error 404
