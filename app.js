@@ -20,7 +20,7 @@ const app = express()
 
 app.use(express.static(`${__dirname}/public`))
 app.use(session({
-	secret: 'secret',
+	secret: 'mysecret',
 	resave: false,
 	saveUninitialized: true
 }))
